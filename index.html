@@ -1,0 +1,418 @@
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CYBER_GRID // SHADOW PROTOCOL</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <!-- Google Font: Inter & JetBrains Mono -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'JetBrains Mono', monospace;
+            background-color: #0d1117;
+            color: #c9d1d9;
+            overflow-x: hidden;
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #0d1117;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #1f2428;
+            border-radius: 3px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #79c0ff;
+        }
+
+        /* Fog / Glow Animations */
+        .glow-ice {
+            box-shadow: 0 0 15px rgba(121, 192, 255, 0.25);
+        }
+        .glow-purple {
+            box-shadow: 0 0 15px rgba(188, 140, 255, 0.25);
+        }
+        .text-glow-ice {
+            text-shadow: 0 0 8px rgba(121, 192, 255, 0.6);
+        }
+        .text-glow-purple {
+            text-shadow: 0 0 8px rgba(188, 140, 255, 0.6);
+        }
+
+        /* Scanline Overlay */
+        .scanlines {
+            background: linear-gradient(
+                to bottom,
+                rgba(255,255,255,0),
+                rgba(255,255,255,0) 50%,
+                rgba(0, 0, 0, 0.3) 50%,
+                rgba(0, 0, 0, 0.3)
+            );
+            background-size: 100% 4px;
+        }
+
+        /* Grid Background Effect */
+        .cyber-grid-bg {
+            background-image: linear-gradient(to right, rgba(121, 192, 255, 0.03) 1px, transparent 1px),
+                              linear-gradient(to bottom, rgba(121, 192, 255, 0.03) 1px, transparent 1px);
+            background-size: 24px 24px;
+        }
+
+        /* Keyframes */
+        @keyframes pulse-fog {
+            0%, 100% { opacity: 0.15; transform: scale(1); }
+            50% { opacity: 0.35; transform: scale(1.05); }
+        }
+        .animate-fog {
+            animation: pulse-fog 8s ease-in-out infinite;
+        }
+    </style>
+</head>
+<body class="cyber-grid-bg min-h-screen flex flex-col justify-between items-center relative selection:bg-purple-900 selection:text-white">
+
+    <!-- Atmospheric Fog Blur Background Elements -->
+    <div class="fixed top-[-10%] left-[-10%] w-[500px] h-[500px] bg-[#79c0ff]/10 rounded-full blur-[120px] pointer-events-none animate-fog"></div>
+    <div class="fixed bottom-[-10%] right-[-10%] w-[500px] h-[500px] bg-[#bc8cff]/10 rounded-full blur-[120px] pointer-events-none animate-fog" style="animation-delay: 4s;"></div>
+
+    <!-- Scanline Effect -->
+    <div class="fixed inset-0 scanlines pointer-events-none z-50 opacity-40"></div>
+
+    <!-- Header Section -->
+    <header class="w-full max-w-4xl px-6 pt-8 pb-4 flex flex-col sm:flex-row justify-between items-center border-b border-[#1f2428] z-10">
+        <div class="flex items-center space-x-3 mb-4 sm:mb-0">
+            <div class="w-3 h-3 bg-[#79c0ff] rounded-full animate-ping"></div>
+            <h1 class="text-xl font-bold tracking-widest text-[#79c0ff] text-glow-ice flex items-center gap-2">
+                <i data-lucide="shield-alert" class="w-5 h-5 text-[#79c0ff]"></i>
+                SHADOW_GRID // MEMORY OVERRIDE
+            </h1>
+        </div>
+        <div class="flex items-center space-x-6 text-xs text-[#8b949e]">
+            <div class="flex items-center space-x-2">
+                <span>STATUS:</span>
+                <span id="system-status" class="text-[#79c0ff] font-semibold">STANDBY</span>
+            </div>
+            <div class="flex items-center space-x-2">
+                <span>LEVEL:</span>
+                <span id="level-display" class="text-[#bc8cff] font-bold text-sm">01</span>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Game Container -->
+    <main class="flex-1 w-full max-w-4xl px-4 py-8 flex flex-col items-center justify-center z-10">
+
+        <!-- Score & Multiplier Dashboard -->
+        <div class="w-full max-w-md bg-[#161b22]/70 backdrop-blur-md rounded-xl p-4 border border-[#30363d] mb-6 flex justify-around items-center glow-ice">
+            <div class="text-center">
+                <p class="text-xs text-[#8b949e] uppercase tracking-wider mb-1">SCORE</p>
+                <p id="score-display" class="text-2xl font-extrabold text-[#79c0ff] text-glow-ice">0000</p>
+            </div>
+            <div class="h-8 w-[1px] bg-[#30363d]"></div>
+            <div class="text-center">
+                <p class="text-xs text-[#8b949e] uppercase tracking-wider mb-1">HIGH SCORE</p>
+                <p id="highscore-display" class="text-2xl font-extrabold text-[#bc8cff] text-glow-purple">0000</p>
+            </div>
+            <div class="h-8 w-[1px] bg-[#30363d]"></div>
+            <div class="text-center">
+                <p class="text-xs text-[#8b949e] uppercase tracking-wider mb-1">MULTIPLIER</p>
+                <p id="multiplier-display" class="text-2xl font-extrabold text-[#3fb950]">x1</p>
+            </div>
+        </div>
+
+        <!-- Interactive Grid Board -->
+        <div class="relative group">
+            <!-- Glowing Accent Frame -->
+            <div class="absolute -inset-1 bg-gradient-to-r from-[#79c0ff]/30 to-[#bc8cff]/30 rounded-2xl blur opacity-50 group-hover:opacity-75 transition duration-500"></div>
+            
+            <div id="grid-container" class="relative grid grid-cols-4 gap-3 bg-[#0d1117]/90 p-5 rounded-2xl border border-[#30363d] shadow-2xl backdrop-blur-xl w-[320px] h-[320px] sm:w-[380px] sm:h-[380px]">
+                <!-- Grid Cells (Dynamic insertion) -->
+            </div>
+        </div>
+
+        <!-- Controls & Instructions -->
+        <div class="mt-8 flex flex-col items-center gap-4 w-full max-w-md">
+            <button id="start-btn" onclick="startGame()" class="w-full py-3.5 px-6 rounded-xl bg-gradient-to-r from-[#1f2428] via-[#161b22] to-[#1f2428] hover:from-[#79c0ff]/20 hover:to-[#bc8cff]/20 border border-[#30363d] hover:border-[#79c0ff] text-[#79c0ff] font-bold tracking-widest uppercase transition-all duration-300 shadow-lg flex items-center justify-center gap-2 group">
+                <i data-lucide="terminal" class="w-5 h-5 group-hover:rotate-12 transition-transform"></i>
+                <span id="btn-text">INITIALIZE SEQUENCE</span>
+            </button>
+
+            <!-- Status & Feedback Message -->
+            <div id="message-box" class="h-6 text-xs text-center font-mono text-[#8b949e] tracking-wide transition-all">
+                Ghi nhớ chuỗi ô sáng và tái lập trình đúng thứ tự.
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="w-full max-w-4xl px-6 py-4 border-t border-[#1f2428] flex flex-col sm:flex-row justify-between items-center text-xs text-[#484f58] z-10 gap-2 sm:gap-0">
+        <div>DESIGNED FOR DARK MODE // COLD CYBERPUNK EDITION</div>
+        <div class="flex items-center space-x-4">
+            <span class="hover:text-[#79c0ff] transition-colors cursor-pointer" onclick="resetHighScore()">Reset Highscore</span>
+            <span>•</span>
+            <span class="text-[#8b949e]">v1.0.4</span>
+        </div>
+    </footer>
+
+    <!-- Audio Synth using Web Audio API (No External Audio Files) -->
+    <script>
+        // Web Audio API Synthesizer Context
+        const AudioCtx = window.AudioContext || window.webkitAudioContext;
+        let audioCtx = null;
+
+        function initAudio() {
+            if (!audioCtx) {
+                audioCtx = new AudioCtx();
+            }
+        }
+
+        // Play Tone Generator
+        function playTone(freq, type = 'sine', duration = 0.25, volume = 0.1) {
+            if (!audioCtx) return;
+            try {
+                const osc = audioCtx.createOscillator();
+                const gain = audioCtx.createGain();
+
+                osc.type = type;
+                osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
+
+                gain.gain.setValueAtTime(volume, audioCtx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.00001, audioCtx.currentTime + duration);
+
+                osc.connect(gain);
+                gain.connect(audioCtx.destination);
+
+                osc.start();
+                osc.stop(audioCtx.currentTime + duration);
+            } catch (e) {
+                console.warn('Audio play block:', e);
+            }
+        }
+
+        // Sound FX Preset
+        const SoundFX = {
+            click: (index) => playTone(200 + index * 40, 'triangle', 0.15, 0.15),
+            sequence: (index) => playTone(300 + index * 60, 'sine', 0.25, 0.2),
+            success: () => {
+                playTone(523.25, 'sine', 0.15, 0.2); // C5
+                setTimeout(() => playTone(659.25, 'sine', 0.15, 0.2), 100); // E5
+                setTimeout(() => playTone(783.99, 'sine', 0.3, 0.2), 200); // G5
+            },
+            fail: () => {
+                playTone(180, 'sawtooth', 0.3, 0.25);
+                setTimeout(() => playTone(130, 'sawtooth', 0.4, 0.25), 150);
+            }
+        };
+
+        // Game State Variables
+        const GRID_SIZE = 16;
+        let sequence = [];
+        let playerSequence = [];
+        let level = 1;
+        let score = 0;
+        let highScore = localStorage.getItem('cyber_grid_highscore') || 0;
+        let isPlaying = false;
+        let isUserTurn = false;
+
+        // UI Elements
+        const gridContainer = document.getElementById('grid-container');
+        const scoreDisplay = document.getElementById('score-display');
+        const highscoreDisplay = document.getElementById('highscore-display');
+        const levelDisplay = document.getElementById('level-display');
+        const systemStatus = document.getElementById('system-status');
+        const messageBox = document.getElementById('message-box');
+        const startBtn = document.getElementById('start-btn');
+        const btnText = document.getElementById('btn-text');
+
+        // Initialize UI Grid
+        function buildGrid() {
+            gridContainer.innerHTML = '';
+            for (let i = 0; i < GRID_SIZE; i++) {
+                const cell = document.createElement('button');
+                cell.className = `
+                    relative w-full h-full rounded-xl bg-[#161b22] border border-[#21262d]
+                    hover:border-[#58a6ff] focus:outline-none transition-all duration-200
+                    cursor-pointer overflow-hidden flex items-center justify-center group
+                `;
+                cell.dataset.index = i;
+                
+                // Subtle Inner Glow Element
+                const innerGlow = document.createElement('div');
+                innerGlow.className = 'absolute inset-0 bg-[#79c0ff]/0 group-hover:bg-[#79c0ff]/5 transition-colors duration-200';
+                cell.appendChild(innerGlow);
+
+                // Click Event
+                cell.addEventListener('click', () => handleCellClick(i));
+                gridContainer.appendChild(cell);
+            }
+            highscoreDisplay.textContent = String(highScore).padStart(4, '0');
+        }
+
+        // Start / Reset Game
+        function startGame() {
+            initAudio();
+            if (isPlaying && isUserTurn) return;
+
+            isPlaying = true;
+            level = 1;
+            score = 0;
+            sequence = [];
+            playerSequence = [];
+
+            scoreDisplay.textContent = '0000';
+            levelDisplay.textContent = '01';
+            systemStatus.textContent = 'RUNNING';
+            systemStatus.className = 'text-[#3fb950] font-semibold animate-pulse';
+
+            btnText.textContent = 'TRANSMITTING...';
+            startBtn.disabled = true;
+            startBtn.classList.add('opacity-50', 'cursor-not-allowed');
+
+            updateMessage('Khởi tạo hệ thống... Quan sát chuỗi dữ liệu.', 'text-[#79c0ff]');
+            
+            setTimeout(nextRound, 1000);
+        }
+
+        // Next Round Sequence
+        function nextRound() {
+            playerSequence = [];
+            isUserTurn = false;
+            levelDisplay.textContent = String(level).padStart(2, '0');
+            updateMessage(`LEVEL ${level}: Đang tải chuỗi dữ liệu...`, 'text-[#bc8cff]');
+
+            // Add new random tile to sequence
+            const nextCell = Math.floor(Math.random() * GRID_SIZE);
+            sequence.push(nextCell);
+
+            // Play Sequence
+            playSequence();
+        }
+
+        // Play Visual Sequence for User
+        function playSequence() {
+            let i = 0;
+            const interval = setInterval(() => {
+                if (i >= sequence.length) {
+                    clearInterval(interval);
+                    isUserTurn = true;
+                    updateMessage('LƯỢT CỦA BẠN: Tái lập trình đúng thứ tự!', 'text-[#3fb950]');
+                    btnText.textContent = 'AWAITING INPUT';
+                    return;
+                }
+                flashCell(sequence[i], 'ice');
+                SoundFX.sequence(sequence[i]);
+                i++;
+            }, Math.max(300, 600 - level * 25)); // Dynamic speedup as level advances
+        }
+
+        // Flash Tile Visual Effect
+        function flashCell(index, mode = 'ice') {
+            const cell = gridContainer.children[index];
+            if (!cell) return;
+
+            if (mode === 'ice') {
+                cell.classList.add('bg-[#79c0ff]', 'shadow-[0_0_20px_#79c0ff]', 'border-white');
+            } else if (mode === 'purple') {
+                cell.classList.add('bg-[#bc8cff]', 'shadow-[0_0_20px_#bc8cff]', 'border-white');
+            } else if (mode === 'error') {
+                cell.classList.add('bg-[#f85149]', 'shadow-[0_0_20px_#f85149]', 'border-white');
+            }
+
+            setTimeout(() => {
+                cell.classList.remove(
+                    'bg-[#79c0ff]', 'bg-[#bc8cff]', 'bg-[#f85149]',
+                    'shadow-[0_0_20px_#79c0ff]', 'shadow-[0_0_20px_#bc8cff]', 'shadow-[0_0_20px_#f85149]',
+                    'border-white'
+                );
+            }, 250);
+        }
+
+        // Handle User Input Click
+        function handleCellClick(index) {
+            if (!isPlaying || !isUserTurn) return;
+
+            SoundFX.click(index);
+            flashCell(index, 'purple');
+            playerSequence.push(index);
+
+            const currentIndex = playerSequence.length - 1;
+
+            // Verify Tile
+            if (playerSequence[currentIndex] !== sequence[currentIndex]) {
+                gameOver();
+                return;
+            }
+
+            // Completed Round
+            if (playerSequence.length === sequence.length) {
+                isUserTurn = false;
+                score += level * 100;
+                scoreDisplay.textContent = String(score).padStart(4, '0');
+
+                if (score > highScore) {
+                    highScore = score;
+                    localStorage.setItem('cyber_grid_highscore', highScore);
+                    highscoreDisplay.textContent = String(highScore).padStart(4, '0');
+                }
+
+                SoundFX.success();
+                updateMessage('XÁC NHẬN CHÍNH XÁC // Đang chuyển Level tiếp theo...', 'text-[#3fb950]');
+                level++;
+                setTimeout(nextRound, 1200);
+            }
+        }
+
+        // Game Over Logic
+        function gameOver() {
+            SoundFX.fail();
+            isPlaying = false;
+            isUserTurn = false;
+
+            // Flash all grid error
+            for (let i = 0; i < GRID_SIZE; i++) {
+                flashCell(i, 'error');
+            }
+
+            systemStatus.textContent = 'SYSTEM BREACH';
+            systemStatus.className = 'text-[#f85149] font-bold animate-bounce';
+
+            updateMessage('TRUY CẬP THẤT BẠI: Lỗi mã hóa dữ liệu.', 'text-[#f85149]');
+
+            btnText.textContent = 'RETRY PROTOCOL';
+            startBtn.disabled = false;
+            startBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+        }
+
+        // Helper Message Updater
+        function updateMessage(msg, colorClass = 'text-[#8b949e]') {
+            messageBox.textContent = msg;
+            messageBox.className = `h-6 text-xs text-center font-mono tracking-wide transition-all ${colorClass}`;
+        }
+
+        // Reset High Score
+        function resetHighScore() {
+            localStorage.removeItem('cyber_grid_highscore');
+            highScore = 0;
+            highscoreDisplay.textContent = '0000';
+            updateMessage('Highscore đã được dọn dẹp.', 'text-[#8b949e]');
+        }
+
+        // On Page Load
+        window.onload = () => {
+            buildGrid();
+            lucide.createIcons();
+        };
+    </script>
+</body>
+</html>
+```
