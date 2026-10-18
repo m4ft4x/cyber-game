@@ -1,3 +1,4 @@
 # cyber-game
-https://m4ft4-cyber-grid.static.domains/
+https://m4ft4x.github.io/cyber-game/
+
 
